@@ -46,7 +46,7 @@ output_line "Finished installing OpenSSH tools"
 # libssl-dev: OpenSSL development libraries
 # net-tools: networking tools for debugging/analysis
 output_line "Installing miscellaneous packages..."
-sudo apt-get -y wget libssl-dev net-tools
+sudo apt-get -y install wget libssl-dev net-tools
 output_line "Finished installing miscellaneous packages"
 
 output_line "Finished common machine provisioning"
