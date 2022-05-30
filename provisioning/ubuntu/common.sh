@@ -27,7 +27,10 @@ output_line() {
 # Ex: add_admin_account user group user-public-key
 add_admin_account() {
     sudo addgroup $2 # add the group first
-    sudo adduser --disabled-password --ingroup $2 $1 # create the user, add to the group, and disable password-based auth
+
+    # create the user non-interactively (no prompt for GECOS information), add
+    # to the new group, and disable password-based auth
+    sudo adduser --gecos "" --disabled-password --ingroup $2 $1
 
     # add the new user to the sudoers group
     # https://askubuntu.com/a/168289
