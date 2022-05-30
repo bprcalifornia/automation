@@ -30,6 +30,7 @@ add_admin_account() {
 
     # create the user non-interactively (no prompt for GECOS information), add
     # to the new group, and disable password-based auth
+    # https://askubuntu.com/a/94067
     sudo adduser --gecos "" --disabled-password --ingroup $2 $1
 
     # add the new user to the sudoers group
