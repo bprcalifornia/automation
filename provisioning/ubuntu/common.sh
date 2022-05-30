@@ -40,11 +40,13 @@ output_line "Installing OpenSSH tools..."
 sudo apt-get -y install openssh-client openssh-server
 output_line "Finished installing OpenSSH tools"
 
-# Install miscellaneous tools
+# Install miscellaneous packages
+#
 # wget: simple file retrieval tool
+# libssl-dev: OpenSSL development libraries
 # net-tools: networking tools for debugging/analysis
-output_line "Installing miscellaneous tools..."
-sudo apt-get -y wget net-tools
-output_line "Finished installing miscellaneous tools"
+output_line "Installing miscellaneous packages..."
+sudo apt-get -y wget libssl-dev net-tools
+output_line "Finished installing miscellaneous packages"
 
 output_line "Finished common machine provisioning"
