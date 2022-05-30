@@ -10,11 +10,47 @@
 #
 # sudo chmod +x ./common.sh
 
+# new non-root admin user (sudo-er) and group data
+ADMIN_USER="bpr"
+ADMIN_GROUP="bpr"
+ADMIN_PUBLIC_KEY="ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKW4lF6mkrzLOBG9be5adUeIveBis9X4GrEcyTYBEasi matthewfritz@Matthews-MacBook-Pro.local"
+
 # Outputs a line to STDOUT
 #
 # Ex: output_line "Installing common packages..."
 output_line() {
     echo "[PROVISION] $1"
+}
+
+# Provisions a new admin account
+#
+# Ex: add_admin_account user group user-public-key
+add_admin_account() {
+    sudo addgroup $2 # add the group first
+    sudo adduser --disabled-password $1 # add the user and disable password-based auth
+    sudo adduser $1 $2 # add the user to the group
+
+    # add the new user to the sudoers group
+    # https://askubuntu.com/a/168289
+    sudo usermod -a -G sudo $1
+
+    # add the SSH data
+    let new_home_dir="/home/$1"
+    let ssh_dir="$new_home_dir/.ssh"
+    sudo mkdir -p $ssh_dir
+
+    # add the necessary public key for this user
+    let authorized_keys_file="$ssh_dir/authorized_keys"
+    sudo touch $authorized_keys_file
+    sudo cat "$ADMIN_PUBLIC_KEY" >> $authorized_keys_file
+
+    # change the ownership of everything in the new home directory to the new user/group
+    sudo chown -hR $1:$2 $new_home_dir
+
+    # update the permissions on the directories and file(s)
+    sudo chmod 755 $new_home_dir
+    sudo chmod 700 $ssh_dir
+    sudo chmod 600 $authorized_keys_file
 }
 
 output_line "Beginning common machine provisioning..."
@@ -48,5 +84,10 @@ output_line "Finished installing OpenSSH tools"
 output_line "Installing miscellaneous packages..."
 sudo apt-get -y install wget libssl-dev net-tools
 output_line "Finished installing miscellaneous packages"
+
+# Add a new non-root admin account
+output_line "Adding non-root admin account ($ADMIN_USER)..."
+add_admin_account $ADMIN_USER $ADMIN_GROUP $ADMIN_PUBLIC_KEY
+output_line "Finished adding non-root admin account ($ADMIN_USER)"
 
 output_line "Finished common machine provisioning"
