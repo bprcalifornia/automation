@@ -27,22 +27,21 @@ output_line() {
 # Ex: add_admin_account user group user-public-key
 add_admin_account() {
     sudo addgroup $2 # add the group first
-    sudo adduser --disabled-password $1 # add the user and disable password-based auth
-    sudo adduser $1 $2 # add the user to the group
+    sudo adduser --disabled-password --ingroup $2 $1 # create the user, add to the group, and disable password-based auth
 
     # add the new user to the sudoers group
     # https://askubuntu.com/a/168289
     sudo usermod -a -G sudo $1
 
     # add the SSH data
-    let new_home_dir="/home/$1"
-    let ssh_dir="$new_home_dir/.ssh"
+    local new_home_dir="/home/$1"
+    local ssh_dir="$new_home_dir/.ssh"
     sudo mkdir -p $ssh_dir
 
     # add the necessary public key for this user
-    let authorized_keys_file="$ssh_dir/authorized_keys"
+    local authorized_keys_file="$ssh_dir/authorized_keys"
     sudo touch $authorized_keys_file
-    sudo cat "$ADMIN_PUBLIC_KEY" >> $authorized_keys_file
+    sudo echo "$ADMIN_PUBLIC_KEY" >> $authorized_keys_file
 
     # change the ownership of everything in the new home directory to the new user/group
     sudo chown -hR $1:$2 $new_home_dir
