@@ -60,7 +60,7 @@ add_admin_account() {
     sudo usermod -a -G sudo $new_user
 
     # set the password for the new user so "sudo" can be used with a PW
-    sudo echo "$new_user:$new_password" | chpasswd
+    echo "$new_user:$new_password" | sudo chpasswd
 
     # add the SSH data
     local new_home_dir="/home/$new_user"
