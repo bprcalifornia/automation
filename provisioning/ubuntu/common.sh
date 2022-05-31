@@ -57,7 +57,7 @@ add_admin_account() {
     # add the necessary public key for this user
     local authorized_keys_file="$ssh_dir/authorized_keys"
     sudo touch $authorized_keys_file
-    sudo echo "$ADMIN_PUBLIC_KEY" >> $authorized_keys_file
+    sudo echo "$3" >> $authorized_keys_file
 
     # change the ownership of everything in the new home directory to the new user/group
     sudo chown -hR $1:$2 $new_home_dir
