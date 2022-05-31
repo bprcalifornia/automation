@@ -5,6 +5,12 @@
 # Common provisioning operations for Burbank Paranormal Research
 # Ubuntu machines (currently Ubuntu 22.04 LTS)
 #
+# Expects the following environment variables to be set:
+#
+#    PROVISION_USER (the new non-root admin user account to add)
+#    PROVISION_GROUP (the new group for the non-root admin user account)
+#    PROVISION_PUBLIC_KEY (the SSH public key for the new non-root admin user account)
+#
 # NOTE: superuser commands still use "sudo" so this script can be run under a
 # non-root account even after initial provisioning
 #
@@ -14,10 +20,12 @@
 #
 # sudo chmod +x ./common.sh
 
-# new non-root admin user (sudo-er) and group data
-ADMIN_USER="bpr"
-ADMIN_GROUP="bpr"
-ADMIN_PUBLIC_KEY="ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKW4lF6mkrzLOBG9be5adUeIveBis9X4GrEcyTYBEasi matthewfritz@Matthews-MacBook-Pro.local"
+# Outputs an error line to STDOUT
+#
+# Ex: error_line "Missing environment variable"
+error_line() {
+    echo "[ERROR] $1"
+}
 
 # Outputs a line to STDOUT
 #
@@ -94,6 +102,28 @@ lock_down_ssh() {
     output_line "Reloaded sshd service configuration"
 }
 
+# Check our environment variables first before proceeding
+HAS_ERROR=0
+if [ -z $PROVISION_USER ]; then
+    error_line "Environment variable PROVISION_USER is not set"
+    HAS_ERROR=1
+fi
+if [ -z $PROVISION_GROUP ]; then
+    error_line "Environment variable PROVISION_GROUP is not set"
+    HAS_ERROR=1
+fi
+if [ -z $PROVISION_PUBLIC_KEY ]; then
+    error_line "Environment variable PROVISION_PUBLIC_KEY is not set"
+    HAS_ERROR=1
+fi
+
+# If any errors occurred, exit with a non-zero status
+if [ $HAS_ERROR -eq 1 ]; then
+    error_line "Exiting with error status 1"
+    exit 1
+fi
+exit 0
+
 output_line "Beginning common machine provisioning..."
 
 # Update the package list(s)
@@ -127,13 +157,13 @@ sudo apt-get -y install wget libssl-dev net-tools
 output_line "Finished installing miscellaneous packages"
 
 # Add a new non-root admin account
-output_line "Adding non-root admin account ($ADMIN_USER)..."
-add_admin_account $ADMIN_USER $ADMIN_GROUP $ADMIN_PUBLIC_KEY
-output_line "Finished adding non-root admin account ($ADMIN_USER)"
+output_line "Adding non-root admin account ($PROVISION_USER)..."
+add_admin_account $PROVISION_USER $PROVISION_GROUP $PROVISION_PUBLIC_KEY
+output_line "Finished adding non-root admin account ($PROVISION_USER)"
 
 # Lock down the root account
 output_line "Locking down root account..."
-lock_down_account root $ADMIN_PUBLIC_KEY
+lock_down_account root $PROVISION_PUBLIC_KEY
 output_line "Finished locking down root account"
 
 # Lock down SSH
