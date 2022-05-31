@@ -60,16 +60,27 @@ add_admin_account() {
     sudo chmod 600 $authorized_keys_file
 }
 
-# Locks down SSH. This removes the public key from the root account, disables direct
-# root account login, and disables password-based authentication entirely.
+# Locks down a user account. This removes the public key from the specified account,
+# removes its local password, then subsequently locks it.
 #
-# Ex: lock_down_ssh public-key-to-remove
-lock_down_ssh() {
+# Ex: lock_down_account user public-key-to-remove
+lock_down_account() {
     # remove the public key from the authorized_keys file since we do not want to
     # allow the non-root admin account and the root account to share the same key
-    local authorized_keys_file="/root/.ssh/authorized_keys"
-    sudo sed -i "/$1/d" $authorized_keys_file
+    local authorized_keys_file="/$1/.ssh/authorized_keys"
+    sudo sed -i "/$2/d" $authorized_keys_file
 
+    # remove the password from the account and lock it to prevent authentication
+    # with a local password
+    # https://askubuntu.com/a/104140
+    sudo passwd -dl $1
+}
+
+# Locks down SSH. This disables direct root login and disables password-based
+# authentication entirely.
+#
+# Ex: lock_down_ssh
+lock_down_ssh() {
     # disable root login over SSH
     local sshd_config_file="/etc/ssh/sshd_config"
     sudo perl -p -i -e "s/PermitRootLogin yes/PermitRootLogin no/g" $sshd_config_file
@@ -120,9 +131,14 @@ output_line "Adding non-root admin account ($ADMIN_USER)..."
 add_admin_account $ADMIN_USER $ADMIN_GROUP $ADMIN_PUBLIC_KEY
 output_line "Finished adding non-root admin account ($ADMIN_USER)"
 
+# Lock down the root account
+output_line "Locking down root account..."
+lock_down_account root $ADMIN_PUBLIC_KEY
+output_line "Finished locking down root account"
+
 # Lock down SSH
 output_line "Locking down SSH..."
-lock_down_ssh $ADMIN_PUBLIC_KEY
+lock_down_ssh
 output_line "Finished locking down SSH"
 
 output_line "Finished common machine provisioning"
