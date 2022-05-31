@@ -20,6 +20,9 @@
 #
 # sudo chmod +x ./common.sh
 
+# Non-success exit code: missing environment variable(s)
+E_MISSING_ENV=1
+
 # Outputs an error line to STDOUT
 #
 # Ex: error_line "Missing environment variable"
@@ -119,10 +122,9 @@ fi
 
 # If any errors occurred, exit with a non-zero status
 if [ $HAS_ERROR -eq 1 ]; then
-    error_line "Exiting with error status 1"
-    exit 1
+    error_line "Exiting with error status $E_MISSING_ENV"
+    exit $E_MISSING_ENV
 fi
-exit 0
 
 output_line "Beginning common machine provisioning..."
 
