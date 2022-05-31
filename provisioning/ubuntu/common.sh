@@ -76,9 +76,17 @@ add_admin_account() {
 #
 # Ex: lock_down_account user public-key-to-remove
 lock_down_account() {
+    # figure out the home directory depending on the account
+    local home_dir=""
+    if [ "$1" == "root" ]; then
+        home_dir="/root"
+    else
+        home_dir="/home/$1"
+    fi
+
     # remove the public key from the authorized_keys file since we do not want to
     # allow the non-root admin account and the root account to share the same key
-    local authorized_keys_file="/$1/.ssh/authorized_keys"
+    local authorized_keys_file="$home_dir/.ssh/authorized_keys"
     sudo sed -i "/$2/d" $authorized_keys_file
 
     # remove the password from the account and lock it to prevent authentication
