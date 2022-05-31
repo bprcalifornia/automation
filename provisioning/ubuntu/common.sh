@@ -42,32 +42,38 @@ output_line() {
 #
 # Ex: add_admin_account user password group user-public-key
 add_admin_account() {
-    sudo addgroup $3 # add the group first
+    # local variables for readability
+    local new_user="$1"
+    local new_password="$2"
+    local new_group="$3"
+    local new_public_key="$4"
+
+    sudo addgroup $new_group # add the group first
 
     # create the user non-interactively (no prompt for GECOS information), add
     # to the new group, and disable password-based auth
     # https://askubuntu.com/a/94067
-    sudo adduser --gecos "" --disabled-password --ingroup $3 $1
+    sudo adduser --gecos "" --disabled-password --ingroup $new_group $new_user
 
     # add the new user to the sudoers group
     # https://askubuntu.com/a/168289
-    sudo usermod -a -G sudo $1
+    sudo usermod -a -G sudo $new_user
 
     # set the password for the new user so "sudo" can be used with a PW
-    sudo echo "$1:$2" | chpasswd
+    sudo echo "$new_user:$new_password" | chpasswd
 
     # add the SSH data
-    local new_home_dir="/home/$1"
+    local new_home_dir="/home/$new_user"
     local ssh_dir="$new_home_dir/.ssh"
     sudo mkdir -p $ssh_dir
 
     # add the necessary public key for this user
     local authorized_keys_file="$ssh_dir/authorized_keys"
     sudo touch $authorized_keys_file
-    sudo echo "$4" >> $authorized_keys_file
+    sudo echo "$new_public_key" >> $authorized_keys_file
 
     # change the ownership of everything in the new home directory to the new user/group
-    sudo chown -hR $1:$3 $new_home_dir
+    sudo chown -hR $new_user:$new_group $new_home_dir
 
     # update the permissions on the directories and file(s)
     sudo chmod 755 $new_home_dir
