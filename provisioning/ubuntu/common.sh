@@ -77,11 +77,9 @@ add_admin_account() {
 # Ex: lock_down_account user public-key-to-remove
 lock_down_account() {
     # figure out the home directory depending on the account
-    local home_dir=""
+    local home_dir="/home/$1"
     if [ "$1" == "root" ]; then
         home_dir="/root"
-    else
-        home_dir="/home/$1"
     fi
 
     # remove the public key from the authorized_keys file since we do not want to
