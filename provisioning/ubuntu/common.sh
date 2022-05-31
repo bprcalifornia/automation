@@ -8,6 +8,7 @@
 # Expects the following environment variables to be set:
 #
 #    PROVISION_USER (the new non-root admin user account to add)
+#    PROVISION_PASSWORD (the new non-root admin user password: needed for "sudo")
 #    PROVISION_GROUP (the new group for the non-root admin user account)
 #    PROVISION_PUBLIC_KEY (the SSH public key for the new non-root admin user account)
 #
@@ -39,18 +40,21 @@ output_line() {
 
 # Provisions a new admin account
 #
-# Ex: add_admin_account user group user-public-key
+# Ex: add_admin_account user password group user-public-key
 add_admin_account() {
-    sudo addgroup $2 # add the group first
+    sudo addgroup $3 # add the group first
 
     # create the user non-interactively (no prompt for GECOS information), add
     # to the new group, and disable password-based auth
     # https://askubuntu.com/a/94067
-    sudo adduser --gecos "" --disabled-password --ingroup $2 $1
+    sudo adduser --gecos "" --disabled-password --ingroup $3 $1
 
     # add the new user to the sudoers group
     # https://askubuntu.com/a/168289
     sudo usermod -a -G sudo $1
+
+    # set the password for the new user so "sudo" can be used with a PW
+    sudo echo "$1:$2" | chpasswd
 
     # add the SSH data
     local new_home_dir="/home/$1"
@@ -60,10 +64,10 @@ add_admin_account() {
     # add the necessary public key for this user
     local authorized_keys_file="$ssh_dir/authorized_keys"
     sudo touch $authorized_keys_file
-    sudo echo "$3" >> $authorized_keys_file
+    sudo echo "$4" >> $authorized_keys_file
 
     # change the ownership of everything in the new home directory to the new user/group
-    sudo chown -hR $1:$2 $new_home_dir
+    sudo chown -hR $1:$3 $new_home_dir
 
     # update the permissions on the directories and file(s)
     sudo chmod 755 $new_home_dir
@@ -117,6 +121,10 @@ if [ -z $PROVISION_USER ]; then
     error_line "Environment variable PROVISION_USER is not set"
     HAS_ERROR=1
 fi
+if [ -z $PROVISION_PASSWORD ]; then
+    error_line "Environment variable PROVISION_PASSWORD is not set"
+    HAS_ERROR=1
+fi
 if [ -z $PROVISION_GROUP ]; then
     error_line "Environment variable PROVISION_GROUP is not set"
     HAS_ERROR=1
@@ -166,7 +174,7 @@ output_line "Finished installing miscellaneous packages"
 
 # Add a new non-root admin account
 output_line "Adding non-root admin account ($PROVISION_USER)..."
-add_admin_account $PROVISION_USER $PROVISION_GROUP $PROVISION_PUBLIC_KEY
+add_admin_account $PROVISION_USER $PROVISION_PASSWORD $PROVISION_GROUP $PROVISION_PUBLIC_KEY
 output_line "Finished adding non-root admin account ($PROVISION_USER)"
 
 # Lock down the root account
