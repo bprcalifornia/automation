@@ -8,6 +8,10 @@
 # NOTE: superuser commands still use "sudo" so this script can be run under a
 # non-root account even after initial provisioning
 #
+# NOTE: this script will lock down the root account, disable password-based
+# authentication, and it will also remove the root public key; the only way to
+# access the root account will be when you are already SSH-ed into the machine
+#
 # sudo chmod +x ./common.sh
 
 # new non-root admin user (sudo-er) and group data
@@ -56,6 +60,29 @@ add_admin_account() {
     sudo chmod 600 $authorized_keys_file
 }
 
+# Locks down SSH. This removes the public key from the root account, disables direct
+# root account login, and disables password-based authentication entirely.
+#
+# Ex: lock_down_ssh public-key-to-remove
+lock_down_ssh() {
+    # remove the public key from the authorized_keys file since we do not want to
+    # allow the non-root admin account and the root account to share the same key
+    local authorized_keys_file="/root/.ssh/authorized_keys"
+    sudo sed -i "/$1/d" $authorized_keys_file
+
+    # disable root login over SSH
+    local sshd_config_file="/etc/ssh/sshd_config"
+    sudo perl -p -i -e "s/PermitRootLogin yes/PermitRootLogin no/g" $sshd_config_file
+
+    # disable password-based login over SSH
+    sudo perl -p -i -e "s/PasswordAuthentication yes/PasswordAuthentication no/g" $sshd_config_file
+
+    # reload the sshd configuration via systemctl so the changes take effect
+    output_line "Reloading sshd service configuration..."
+    sudo systemctl reload sshd
+    output_line "Reloaded sshd service configuration"
+}
+
 output_line "Beginning common machine provisioning..."
 
 # Update the package list(s)
@@ -92,5 +119,10 @@ output_line "Finished installing miscellaneous packages"
 output_line "Adding non-root admin account ($ADMIN_USER)..."
 add_admin_account $ADMIN_USER $ADMIN_GROUP $ADMIN_PUBLIC_KEY
 output_line "Finished adding non-root admin account ($ADMIN_USER)"
+
+# Lock down SSH
+output_line "Locking down SSH..."
+lock_down_ssh $ADMIN_PUBLIC_KEY
+output_line "Finished locking down SSH"
 
 output_line "Finished common machine provisioning"
