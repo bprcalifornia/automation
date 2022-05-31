@@ -48,7 +48,8 @@ add_admin_account() {
     local new_group="$3"
     local new_public_key="$4"
 
-    sudo addgroup $new_group # add the group first
+    # add the group first
+    sudo addgroup $new_group
 
     # create the user non-interactively (no prompt for GECOS information), add
     # to the new group, and disable password-based auth
