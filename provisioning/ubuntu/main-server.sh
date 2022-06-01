@@ -53,9 +53,11 @@ if [ ! "$?" -eq "0" ]; then
 fi
 output_line "Finished common machine provisioning operations"
 
+# Begin provisioning the specific environments
+pushd environments
+
 # Perform the web environment provisioning
 output_line "Provisioning web environment..."
-pushd environments
 sudo chmod +x ./web.sh
 ./web.sh
 if [ ! "$?" -eq "0" ]; then
