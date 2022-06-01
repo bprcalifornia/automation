@@ -5,12 +5,26 @@
 # Provisioning operations specific to the main Burbank Paranormal Research
 # server (Ubuntu 22.04 LTS)
 #
-# Ensure the common machine provisioning script (common.sh) is run first
-#
-# sudo chmod +x ./main-server.sh
+# The following scripts will be run in this order:
+#   common.sh (common machine provisioning)
+#   environments/
+#      web.sh (web environment provisioning)
 #
 # NOTE: superuser commands still use "sudo" so this script can be run under a
 # non-root account even after initial provisioning
+
+# Exit status code when common provisioning operations fail
+E_NO_COMMON=81
+
+# Exit status code when web environment provisioning fails
+E_NO_WEB=82
+
+# Outputs an error line to STDOUT
+#
+# Ex: error_line "Cannot provision"
+error_line() {
+    echo "[ERROR] $1"
+}
 
 # Outputs a line to STDOUT
 #
@@ -19,35 +33,32 @@ output_line() {
     echo "[PROVISION] $1"
 }
 
-# Installs certbot with Let's Encrypt so we can manage HTTPS certs
-# https://letsencrypt.org/getting-started/
-# https://certbot.eff.org/instructions?ws=nginx&os=ubuntufocal
-#
-# Ex: install_certbot
-install_certbot() {
-    # snap should be pre-installed; if not, see https://snapcraft.io/docs/installing-snap-on-ubuntu
-    
-    # install and refresh snap core
-    sudo snap install core
-    sudo snap refresh core
+# Perform the common machine provisioning
+output_line "Performing common machine provisioning operations..."
+sudo chmod +x ./common.sh
+./common.sh
+if [ ! "$?" -eq "0" ]; then
+    # something failed with the common provisioning so exit immediately
+    error_line "Common machine provisioning failed"
+    error_line "Exiting"
+    exit $E_NO_COMMON
+fi
+output_line "Finished common machine provisioning operations"
 
-    # remove any default OS certbot package(s)
-    sudo apt-get remove certbot
+# Perform the web environment provisioning
+output_line "Provisioning web environment..."
+pushd environments
+sudo chmod +x ./web.sh
+./web.sh
+if [ ! "$?" -eq "0" ]; then
+    # something failed with the web environment provisioning so exit immediately
+    error_line "Web environment provisioning failed"
+    error_line "Exiting"
+    popd
+    exit $E_NO_WEB
+fi
+output_line "Finished provisioning web environment"
 
-    # install certbot itself
-    sudo snap install --classic certbot
-
-    # add a certbot symlink to the user binary directory so it's in PATH by default
-    sudo ln -s /snap/bin/certbot /usr/bin/certbot
-
-    # certbot is now installed so we should generate and configure our cert(s)
-    # for Nginx later on in one of two ways:
-    #
-    # 1. Automatic: sudo certbot --nginx
-    # 2. Manual: sudo certbot certonly --nginx
-}
-
-# Install certbot
-output_line "Installing Certbot so we can use Let's Encrypt for HTTPS certs..."
-install_certbot
-output_line "Finished installing Certbot"
+# Pop the environments directory from the stack and finish up
+popd
+output_line "Finished"
