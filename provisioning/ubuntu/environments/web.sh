@@ -5,8 +5,6 @@
 # Provisioning operations specific to the main Burbank Paranormal Research
 # server (Ubuntu 22.04 LTS) web environment
 #
-# Ensure the common machine provisioning script (common.sh) is run first
-#
 # sudo chmod +x ./web.sh
 #
 # NOTE: superuser commands still use "sudo" so this script can be run under a
@@ -47,7 +45,19 @@ install_certbot() {
     # 2. Manual: sudo certbot certonly --nginx
 }
 
+# Installs Nginx
+#
+# Ex: install_nginx
+install_nginx() {
+
+}
+
 # Install certbot
 output_line "Installing Certbot so we can use Let's Encrypt for HTTPS certs..."
 install_certbot
 output_line "Finished installing Certbot"
+
+# Install Nginx
+output_line "Installing Nginx..."
+install_nginx
+output_line "Finished installing Nginx"

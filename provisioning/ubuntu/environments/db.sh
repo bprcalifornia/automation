@@ -5,8 +5,6 @@
 # Provisioning operations specific to the main Burbank Paranormal Research
 # server (Ubuntu 22.04 LTS) database environment
 #
-# Ensure the common machine provisioning script (common.sh) is run first
-#
 # sudo chmod +x ./db.sh
 #
 # NOTE: superuser commands still use "sudo" so this script can be run under a
