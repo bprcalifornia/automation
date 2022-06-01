@@ -26,6 +26,16 @@ error_line() {
     echo "[ERROR] $1"
 }
 
+# Outputs an error line to STDOUT followed by "Exiting" and exits immediately
+# with the specified exit status code
+#
+# Ex: fatal_line "Common provisioning failed" $E_NO_COMMON
+fatal_line() {
+    error_line "$1"
+    error_line "Exiting"
+    exit $2
+}
+
 # Outputs a line to STDOUT
 #
 # Ex: output_line "Installing common packages..."
@@ -39,9 +49,7 @@ sudo chmod +x ./common.sh
 ./common.sh
 if [ ! "$?" -eq "0" ]; then
     # something failed with the common provisioning so exit immediately
-    error_line "Common machine provisioning failed"
-    error_line "Exiting"
-    exit $E_NO_COMMON
+    fatal_line "Common machine provisioning failed" $E_NO_COMMON
 fi
 output_line "Finished common machine provisioning operations"
 
@@ -52,10 +60,7 @@ sudo chmod +x ./web.sh
 ./web.sh
 if [ ! "$?" -eq "0" ]; then
     # something failed with the web environment provisioning so exit immediately
-    error_line "Web environment provisioning failed"
-    error_line "Exiting"
-    popd
-    exit $E_NO_WEB
+    fatal_line "Web environment provisioning failed" $E_NO_WEB
 fi
 output_line "Finished provisioning web environment"
 
