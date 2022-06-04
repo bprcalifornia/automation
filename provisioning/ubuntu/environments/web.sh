@@ -9,6 +9,8 @@
 #
 # NOTE: superuser commands still use "sudo" so this script can be run under a
 # non-root account even after initial provisioning
+#
+# https://www.digitalocean.com/community/tutorials/how-to-install-php-8-1-and-set-up-a-local-development-environment-on-ubuntu-22-04
 
 # New web user account information; these will also modify some of the Nginx settings
 WEB_ACCOUNT_USER="www"
@@ -89,7 +91,13 @@ install_certbot() {
 #
 # Ex: install_composer
 install_composer() {
+    # write the Composer setup script to /tmp
+    curl -sS https://getcomposer.org/installer -o /tmp/composer-setup.php
 
+    # execute the setup script, install Composer in /usr/local/bin, and then
+    # remove the script immediately
+    sudo php /tmp/composer-setup.php --install-dir=/usr/local/bin --filename=composer
+    rm /tmp/composer-setup.php
 }
 
 # Installs Nginx
@@ -100,7 +108,6 @@ install_nginx() {
 }
 
 # Installs PHP along with some useful extensions
-# https://www.digitalocean.com/community/tutorials/how-to-install-php-8-1-and-set-up-a-local-development-environment-on-ubuntu-22-04
 #
 # Ex: install_php
 install_php() {
