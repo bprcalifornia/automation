@@ -11,6 +11,8 @@
 # non-root account even after initial provisioning
 #
 # https://www.digitalocean.com/community/tutorials/how-to-install-php-8-1-and-set-up-a-local-development-environment-on-ubuntu-22-04
+# https://www.digitalocean.com/community/tutorials/how-to-install-linux-nginx-mysql-php-lemp-stack-on-ubuntu-22-04
+# https://www.digitalocean.com/community/tutorials/how-to-install-and-configure-laravel-with-nginx-on-ubuntu-22-04
 
 # New web user account information; these will also modify some of the Nginx settings
 WEB_ACCOUNT_USER="www"
@@ -19,7 +21,7 @@ WEB_ACCOUNT_DIR="/var/www"
 
 # Name of the PHP version when installing packages and the relative package names
 PHP_VERSION_NAME="php8.1"
-PHP_VERSION_PACKAGES="cli common mysql zip gd mbstring curl xml bcmath"
+PHP_VERSION_PACKAGES="cli common mysql zip gd mbstring curl xml bcmath fpm"
 
 # Outputs a line to STDOUT
 #
@@ -104,7 +106,8 @@ install_composer() {
 #
 # Ex: install_nginx
 install_nginx() {
-
+    # install the base Nginx distribution
+    sudo apt-get install nginx
 }
 
 # Installs PHP along with some useful extensions
