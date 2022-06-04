@@ -53,8 +53,8 @@ add_web_account() {
 
     # setgid (2) on the web root directory so the web server can serve files
     # created inside the directory based on the group if necessary (along with
-    # the proper rwxrwxr-x perms that become rwxrwsr-x)
-    sudo chmod -hR 2755 $WEB_ACCOUNT_DIR
+    # the proper rwxr-xr-x perms that become rwxr-sr-x)
+    sudo chmod -R 2755 $WEB_ACCOUNT_DIR
 }
 
 # Installs certbot with Let's Encrypt so we can manage HTTPS certs
