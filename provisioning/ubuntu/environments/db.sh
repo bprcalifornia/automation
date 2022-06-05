@@ -33,3 +33,23 @@ fatal_line() {
 output_line() {
     echo "[PROVISION] $1"
 }
+
+# Installs MySQL (this uses MariaDB as the server distribution); this will
+# also display output regarding an installation command that must be run
+# manually.
+#
+# Ex: install_mysql
+install_mysql() {
+    sudo apt-get install -y mariadb-server
+
+    # display the command that will need to be run manually
+    echo
+    echo "Make sure you run the following command to set up your new MySQL instance:"
+    echo "   sudo mysql_secure_installation"
+    echo
+}
+
+# Install MySQL (MariaDB)
+output_line "Installing MySQL..."
+install_mysql
+output_line "Finished installing MySQL"
