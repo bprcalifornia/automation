@@ -10,6 +10,10 @@
 # NOTE: superuser commands still use "sudo" so this script can be run under a
 # non-root account even after initial provisioning
 
+# Absolute path to this script's directory
+# https://stackoverflow.com/a/11114547
+SCRIPT_DIR=$(dirname $(realpath "$0"))
+
 # Nginx-specific properties
 NGINX_DIR="/etc/nginx"
 NGINX_LOG_DIR="/var/log/nginx"
@@ -98,7 +102,7 @@ add_site() {
         error_line "Site configuration file \"${server_name}\" already exists. Skipping."
         return
     fi
-    sudo cp $template_file $site_filename
+    sudo cp $SCRIPT_DIR/$template_file $site_filename
     sudo perl -p -i -e "s/[SERVER_NAME]/${server_name}/g" $site_filename
 
     # add a site-specific log directory with the proper ownership
