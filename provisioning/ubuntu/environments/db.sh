@@ -9,6 +9,8 @@
 #
 # NOTE: superuser commands still use "sudo" so this script can be run under a
 # non-root account even after initial provisioning
+#
+# https://www.digitalocean.com/community/tutorials/how-to-install-mariadb-on-ubuntu-22-04
 
 # Outputs an error line to STDOUT
 #
@@ -44,9 +46,9 @@ install_mysql() {
 
     # display the command that will need to be run manually
     echo
-    echo "Make sure you run the following command to set up your new MySQL instance:"
-    echo "   sudo mysql_secure_installation"
-    echo
+    output_line "Make sure you run the following command to set up your new MySQL instance:"
+    output_line "   sudo mysql_secure_installation"
+    output_line
 }
 
 # Install MySQL (MariaDB)
