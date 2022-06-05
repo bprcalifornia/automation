@@ -29,6 +29,34 @@ WEB_ACCOUNT_DIR="/var/www"
 SSL_CERT_DIR="/etc/ssl/certs"
 SSL_KEY_DIR="/etc/ssl/private"
 
+display_help() {
+    local script_name=$(basename "$0")
+    echo "Usage: ${script_name} [operation] [arguments]"
+    echo
+    echo "Operation can be one of the following:"
+    echo
+    echo "   add-site [server_name]"
+    echo "   check-site [server_name]"
+    echo "   disable-site [server_name]"
+    echo "   enable-site [server_name]"
+    echo "   add-ssl-cert [server_name] [local|production]"
+    echo "   remove-ssl-cert [server_name]"
+    echo "   replace-ssl-cert [server_name] [local|production]"
+    echo "   help"
+    echo
+    echo "Examples:"
+    echo
+    echo "   add-site example.com"
+    echo "   check-site example.com"
+    echo "   disable-site example.com"
+    echo "   enable-site example.com"
+    echo "   add-ssl-cert example.com local"
+    echo "   add-ssl-cert example.com production"
+    echo "   remove-ssl-cert example.com"
+    echo "   replace-ssl-cert example.com local"
+    echo "   replace-ssl-cert example.com production"
+}
+
 # Outputs an error line to STDOUT
 #
 # Ex: error_line "Cannot change site"
@@ -70,6 +98,10 @@ reload_nginx() {
 add_site() {
     # set variables for readability
     local server_name="$1"
+    if [ -z "$server_name" ]; then
+        error_line "Site name is required. Skipping"
+        return
+    fi
 
     output_line "Adding site \"${server_name}\" to Nginx..."
 
@@ -141,6 +173,12 @@ add_ssl_certificate() {
         cert_type="$2"
     fi
 
+    # ensure we have a site name
+    if [ -z "$server_name" ]; then
+        error_line "Site name is required. Skipping"
+        return
+    fi
+
     output_line "Adding SSL certificate for site \"${server_name}\"..."
 
     # generate the certificate
@@ -157,14 +195,50 @@ add_ssl_certificate() {
     output_line "Successfully added SSL certificate for site \"${server_name}\""
 }
 
+# Checks Nginx configuration for a site
+#
+# Ex: check_site "example.com"
+check_site() {
+    # set variables for readability
+    local server_name="$1"
+    if [ -z "$server_name" ]; then
+        error_line "Site name is required. Skipping"
+        return
+    fi
+
+    # does the site configuration file exist?
+    if [ ! -f "${SITES_AVAILABLE_DIR}/${server_name}" ]; then
+        # if it doesn't exist, just return since something that does not exist
+        # obviously will not be enabled either
+        output_line "Site configuration file \"${server_name}\" does not exist"
+        return
+    fi
+
+    # site config file exists, so check whether it is enabled with a symlink
+    output_line "Site configuration file \"${server_name}\" exists"
+    if [ -L "${SITES_ENABLED_DIR}/${server_name}" ]; then
+        if [ -e "${SITES_ENABLED_DIR}/${server_name}" ]; then
+            output_line "Site configuration is enabled"
+        else
+            output_line "Site configuration is not enabled (symlink exists but its target does not exist)"
+        fi
+    else
+        output_line "Site configuration is not enabled (symlink does not exist)"
+    fi
+}
+
 # Disables a site in Nginx
 #
 # Ex: disable_site "example.com"
 disable_site() {
     # set variables for readability
     local server_name="$1"
+    if [ -z "$server_name" ]; then
+        error_line "Site name is required. Skipping"
+        return
+    fi
 
-    # disable the site and reload the configuration
+    # remove the site and reload the configuration
     output_line "Disabling site \"${server_name}\"..."
     sudo rm $SITES_ENABLED_DIR/$server_name
     reload_nginx
@@ -177,6 +251,10 @@ disable_site() {
 enable_site() {
     # set variables for readability
     local server_name="$1"
+    if [ -z "$server_name" ]; then
+        error_line "Site name is required. Skipping"
+        return
+    fi
 
     # enable the site and reload the configuraiton
     output_line "Enabling site \"${server_name}\"..."
@@ -191,6 +269,10 @@ enable_site() {
 remove_ssl_certificate() {
     # set variables for readability
     local server_name="$1"
+    if [ -z "$server_name" ]; then
+        error_line "Site name is required. Skipping"
+        return
+    fi
 
     # remove the certificate and key files
     output_line "Removing SSL certificate for site \"${server_name}\"..."
@@ -215,9 +297,55 @@ replace_ssl_certificate() {
         cert_type="$2"
     fi
 
+    # ensure we have a site name
+    if [ -z "$server_name" ]; then
+        error_line "Site name is required. Skipping"
+        return
+    fi
+
     # remove the certificate first
     remove_ssl_certificate $server_name
 
     # now add a new certificate
     add_ssl_certificate $server_name $cert_type
 }
+
+# Figure out which control operation to perform
+if [ -z "$1" ]; then
+    # no arguments so just display the help screen
+    display_help
+    exit
+fi
+case "$1" in
+    add-site)
+        # add a new Nginx site
+        add_site "$2"
+        ;;
+    check-site)
+        # checks the configuration of an Nginx site
+        check_site "$2"
+        ;;
+    disable-site)
+        # disable an Nginx site
+        disable_site "$2"
+        ;;
+    enable-site)
+        # enable an Nginx site
+        enable_site "$2"
+        ;;
+    add-ssl-cert)
+        # add an SSL cert for a site
+        add_ssl_certificate "$2" "$3"
+        ;;
+    remove-ssl-cert)
+        # remove an SSL cert for a site
+        remove_ssl_certificate "$2"
+        ;;
+    replace-ssl-cert)
+        # replace an SSL cert for a site
+        replace_ssl_certificate "$3"
+        ;;
+    help|*)
+        # help command or unrecognized command
+        display_help
+esac

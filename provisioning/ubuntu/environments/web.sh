@@ -148,7 +148,7 @@ install_certbot
 output_line "Finished installing Certbot"
 
 # Create the web user and create the web document root
-output_line "Adding web user user..."
+output_line "Adding web user account..."
 add_web_account
 output_line "Finished adding web user account"
 
