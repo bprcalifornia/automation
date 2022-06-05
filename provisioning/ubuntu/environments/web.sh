@@ -58,7 +58,7 @@ add_web_account() {
     # setgid (2) on the web root directory so the web server can serve files
     # created inside the directory based on the group if necessary (along with
     # the proper rwxr-xr-x perms that become rwxr-sr-x)
-    sudo chmod -R 2755 $WEB_ACCOUNT_DIR
+    sudo chmod 2755 $WEB_ACCOUNT_DIR
 }
 
 # Installs certbot with Let's Encrypt so we can manage HTTPS certs
@@ -107,7 +107,18 @@ install_composer() {
 # Ex: install_nginx
 install_nginx() {
     # install the base Nginx distribution
-    sudo apt-get install nginx
+    sudo apt-get install -y nginx
+
+    # change the user under which the Nginx process runs
+    sudo perl -p -i -e "s/user www-data;/user ${WEB_ACCOUNT_USER};/g" /etc/nginx/nginx.conf
+
+    # change the ownership on the web directory again to take any default web
+    # document structure from Nginx into account
+    sudo chown -hR $WEB_ACCOUNT_USER:$WEB_ACCOUNT_GROUP $WEB_ACCOUNT_DIR
+
+    # restart the Nginx service so our changes take effect immediately; we have
+    # to restart instead of reload since the process user has changed
+    sudo systemctl restart nginx
 }
 
 # Installs PHP along with some useful extensions
