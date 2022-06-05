@@ -39,9 +39,9 @@ display_help() {
     echo "   check-site [server_name]"
     echo "   disable-site [server_name]"
     echo "   enable-site [server_name]"
-    echo "   add-ssl-cert [server_name] [local|production]"
+    echo "   add-ssl-cert [server_name] [--local|--production]"
     echo "   remove-ssl-cert [server_name]"
-    echo "   replace-ssl-cert [server_name] [local|production]"
+    echo "   replace-ssl-cert [server_name] [--local|--production]"
     echo "   help"
     echo
     echo "Examples:"
@@ -50,11 +50,11 @@ display_help() {
     echo "   check-site example.com"
     echo "   disable-site example.com"
     echo "   enable-site example.com"
-    echo "   add-ssl-cert example.com local"
-    echo "   add-ssl-cert example.com production"
+    echo "   add-ssl-cert example.com --local"
+    echo "   add-ssl-cert example.com --production"
     echo "   remove-ssl-cert example.com"
-    echo "   replace-ssl-cert example.com local"
-    echo "   replace-ssl-cert example.com production"
+    echo "   replace-ssl-cert example.com --local"
+    echo "   replace-ssl-cert example.com --production"
 }
 
 # Outputs an error line to STDOUT
@@ -335,7 +335,17 @@ case "$1" in
         ;;
     add-ssl-cert)
         # add an SSL cert for a site
-        add_ssl_certificate "$2" "$3"
+        local cert_type=""
+        if [ ! -z "$3" ]; then
+            case "$3" in
+                --production)
+                    cert_type="production"
+                    ;;
+                *)
+                    cert_type="local"
+            esac
+        fi
+        add_ssl_certificate "$2" "${cert_type}"
         ;;
     remove-ssl-cert)
         # remove an SSL cert for a site
@@ -343,7 +353,17 @@ case "$1" in
         ;;
     replace-ssl-cert)
         # replace an SSL cert for a site
-        replace_ssl_certificate "$3"
+        local cert_type=""
+        if [ ! -z "$3" ]; then
+            case "$3" in
+                --production)
+                    cert_type="production"
+                    ;;
+                *)
+                    cert_type="local"
+            esac
+        fi
+        replace_ssl_certificate "$2" "${cert_type}"
         ;;
     help|*)
         # help command or unrecognized command
