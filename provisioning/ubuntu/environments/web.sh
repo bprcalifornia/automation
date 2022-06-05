@@ -13,6 +13,7 @@
 # https://www.digitalocean.com/community/tutorials/how-to-install-php-8-1-and-set-up-a-local-development-environment-on-ubuntu-22-04
 # https://www.digitalocean.com/community/tutorials/how-to-install-linux-nginx-mysql-php-lemp-stack-on-ubuntu-22-04
 # https://www.digitalocean.com/community/tutorials/how-to-install-and-configure-laravel-with-nginx-on-ubuntu-22-04
+# https://www.digitalocean.com/community/tutorials/how-to-install-and-secure-redis-on-ubuntu-22-04
 
 # New web user account information; these will also modify some of the Nginx settings
 WEB_ACCOUNT_USER="www"
@@ -131,7 +132,7 @@ install_nginx() {
 #
 # Ex: install_php
 install_php() {
-    sudo apt-get install --no-install-recomments $PHP_VERSION_NAME
+    sudo apt-get install -y --no-install-recommends $PHP_VERSION_NAME
 
     # packages will be installed as ${PHP_VERSION_NAME}-${package_name}
     # Ex: apt-get install -y php8.1-cli php8.1-common ...
@@ -140,6 +141,19 @@ install_php() {
         install_command="${install_command} ${PHP_VERSION_NAME}-${package_name}"
     done
     sudo $install_command
+}
+
+# Installs Redis
+#
+# Ex: install_redis
+install_redis() {
+    sudo apt-get install -y redis-server
+
+    # allow systemd (systemctl) to manage Redis
+    sudo perl -p -i -e "s/^(supervised no)$/supervised systemd/g" /etc/redis/redis.conf
+
+    # now restart the Redis service
+    sudo systemctl restart redis
 }
 
 # Install certbot
@@ -166,3 +180,8 @@ output_line "Finished installing Composer"
 output_line "Installing Nginx..."
 install_nginx
 output_line "Finished installing Nginx"
+
+# Install Redis
+output_line "Installing Redis..."
+install_redis
+output_line "Finished installing Redis"
