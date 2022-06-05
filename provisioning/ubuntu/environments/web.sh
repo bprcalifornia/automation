@@ -23,6 +23,9 @@ WEB_ACCOUNT_DIR="/var/www"
 PHP_VERSION_NAME="php8.1"
 PHP_VERSION_PACKAGES="cli common mysql zip gd mbstring curl xml bcmath fpm"
 
+# Nginx-specific properties
+NGINX_LOG_DIR="/var/log/nginx"
+
 # Outputs a line to STDOUT
 #
 # Ex: output_line "Installing common packages..."
@@ -111,6 +114,9 @@ install_nginx() {
 
     # change the user under which the Nginx process runs
     sudo perl -p -i -e "s/user www-data;/user ${WEB_ACCOUNT_USER};/g" /etc/nginx/nginx.conf
+
+    # change the ownership on the default Nginx log files
+    sudo chown $WEB_ACCOUNT_USER $NGINX_LOG_DIR/*.log
 
     # change the ownership on the web directory again to take any default web
     # document structure from Nginx into account
