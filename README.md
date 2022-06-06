@@ -70,7 +70,7 @@ All of the BPR websites, web applications, and data that anyone accesses are ser
 
 #### Web Environment Provisioning
 
-The provisioning script installs the following packages via `snap`:
+The provisioning script installs the following packages via [`snap`](https://snapcraft.io/):
 
 * Core: [`core`](https://snapcraft.io/install/core/ubuntu)
 * Certbot: [`certbot`](https://snapcraft.io/install/certbot/ubuntu)
