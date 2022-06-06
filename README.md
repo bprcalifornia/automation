@@ -12,6 +12,7 @@ Automated scripts and tools related to [Burbank Paranormal Research](https://git
 ## Table of Contents
 
 * [Overview](#overview)
+* [Machine Hosting](#machine-hosting)
 * [Machine Provisioning](#machine-provisioning)
     * [Main Server Machine](#main-server-machine)
 * [Environments](#environments)
@@ -29,9 +30,21 @@ Automated scripts and tools related to [Burbank Paranormal Research](https://git
 
 ## Overview
 
-BPR uses Ubuntu (currently [Ubuntu 22.04 LTS](https://releases.ubuntu.com/22.04/)) as the underlying OS for all of its hosted machines.
+BPR uses Linux (currently [Ubuntu 22.04 LTS](https://releases.ubuntu.com/22.04/)) as the underlying OS for all of its hosted virtual machines.
 
 All shell scripts (files ending in `.sh`) are written in Bash and need to be marked with the executable (`+x`) bit before they are runnable.
+
+## Machine Hosting
+
+The machines that BPR runs are hosted through VPS (Virtual Private Server) providers to enable more complete control over machine behavior and environment.
+
+Some VPS providers:
+
+* [Linode](https://www.linode.com)
+* [Digital Ocean](https://www.digitalocean.com)
+* Amazon Web Services (AWS) - [EC2 Instances](https://aws.amazon.com/ec2)
+* Google Cloud Platform (GCP) - [Compute Engine](https://cloud.google.com/compute)
+* [...and many more](https://www.google.com/search?q=vps+providers)
 
 ## Machine Provisioning
 
