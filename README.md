@@ -1,4 +1,11 @@
-# BPR Automation
+<div align="center">
+  <p>
+    <a href="https://github.com/bprcalifornia" target="_blank">
+      <img src="https://raw.githubusercontent.com/bprcalifornia/.github/main/profile/img/bpr_logo.webp" alt="Burbank Paranormal Research on GitHub" title="Burbank Paranormal Research on GitHub" />
+    </a>
+  </p>
+  <h1>BPR Automation</h1>
+</div>
 
 Automated scripts and tools related to [Burbank Paranormal Research](https://github.com/bprcalifornia) IT workflows and processes.
 
