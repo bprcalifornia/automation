@@ -6,13 +6,14 @@ Automated scripts and tools related to [Burbank Paranormal Research](https://git
 
 * [Overview](#overview)
 * [Machine Provisioning](#machine-provisioning)
-    * [Environments](#environments)
-        * [Common Environment](#common-environment)
-            * [Common Environment Provisioning](#common-environment-provisioning)
-        * [Web Environment](#web-environment)
-            * [Web Environment Provisioning](#web-environment-provisioning)
-        * [Database Environment](#database-environment)
-            * [Database Environment Provisioning](#database-environment-provisioning)
+    * [Main Server Machine](#main-server-machine)
+* [Environments](#environments)
+    * [Common Environment](#common-environment)
+        * [Common Environment Provisioning](#common-environment-provisioning)
+    * [Web Environment](#web-environment)
+        * [Web Environment Provisioning](#web-environment-provisioning)
+    * [Database Environment](#database-environment)
+        * [Database Environment Provisioning](#database-environment-provisioning)
 * [Nginx Automation](#nginx-automation)
     * [Site Control Tool](#site-control-tool)
 
@@ -24,13 +25,15 @@ All shell scripts (files ending in `.sh`) are written in Bash and need to be mar
 
 ## Machine Provisioning
 
+### Main Server Machine
+
 The main server is provisioned with the [`provisioning/ubuntu/main-server.sh`](provisioning/ubuntu/main-server.sh) script. This will create and configure the [Common](#common-environment), [Web](#web-environment), and [Database](#database-environment) environments.
 
-### Environments
+## Environments
 
 The environment-specific provisioning scripts live within the [`provisioning/ubuntu/environments`](provisioning/ubuntu/environments) directory.
 
-#### Common Environment
+### Common Environment
 
 Script: [`common.sh`](provisioning/ubuntu/environments/common.sh)
 
@@ -38,16 +41,16 @@ The _Common Environment_ is the base environment for all other environments. Thi
 
 This is the first script that should be run before a specific environment is provisionined.
 
-##### Common Environment Provisioning
+#### Common Environment Provisioning
 
 The provisioning script installs the following packages via `apt-get`:
 
-* Development / Building: `build-essential`
-* OpenSSH: `openssh-client`, `openssh-server`
-* Network Tools: `net-tools`, `wget`
-* OpenSSL: `libssl-dev`
+* Development / Building: [`build-essential`](https://packages.ubuntu.com/jammy/build-essential)
+* OpenSSH: [`openssh-client`](https://packages.ubuntu.com/jammy/openssh-client), [`openssh-server`](https://packages.ubuntu.com/jammy/openssh-server)
+* Network Tools: [`net-tools`](https://packages.ubuntu.com/jammy/net-tools), [`wget`](https://packages.ubuntu.com/jammy/wget)
+* OpenSSL: [`libssl-dev`](https://packages.ubuntu.com/jammy/libssl-dev)
 
-NOTE: the `build-essential` package is what includes `git`, `svn`, `make`, etc.
+NOTE: the `build-essential` package is what includes `git`, `perl`, `make`, etc. as part of its [`dpkg-dev`](https://packages.ubuntu.com/jammy/dpkg-dev) dependency.
 
 The script also performs the following configuration operations:
 
@@ -57,17 +60,17 @@ The script also performs the following configuration operations:
 * Disables `root` login over SSH
 * Disables password-based login over SSH (for our purposes, we only want to use key-based auth)
 
-#### Web Environment
+### Web Environment
 
 Script: [`web.sh`](provisioning/ubuntu/environments/web.sh)
 
-##### Web Environment Provisioning
+#### Web Environment Provisioning
 
-#### Database Environment
+### Database Environment
 
 Script: [`db.sh`](provisioning/ubuntu/environments/db.sh)
 
-##### Database Environment Provisioning
+#### Database Environment Provisioning
 
 ## Nginx Automation
 
