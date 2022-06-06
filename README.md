@@ -36,7 +36,7 @@ All shell scripts (files ending in `.sh`) are written in Bash and need to be mar
 
 ## Machine Hosting
 
-The machines that BPR runs are hosted through VPS (Virtual Private Server) providers to enable more complete control over machine behavior and environment.
+The machines that BPR runs are hosted through a VPS (Virtual Private Server) provider to enable more complete control over machine behavior and environment.
 
 Some VPS providers:
 
