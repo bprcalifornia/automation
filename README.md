@@ -60,7 +60,7 @@ The script performs the following configuration operations:
 * Disables `root` login over SSH
 * Disables password-based login over SSH (for our purposes, we only want to use key-based auth)
 
-The following TCP ports are bound (i.e. there is a something listening on them):
+The following TCP ports are bound (i.e. there is something listening on them):
 
 * SSH: 22
 
@@ -71,6 +71,8 @@ Script: [`web.sh`](provisioning/ubuntu/environments/web.sh)
 The _Web Environment_ provides everything related to processing and serving data both internally (to our staff and clients) and externally (to the public) over the web.
 
 All of the BPR websites, web applications, and data that anyone accesses are served within this environment.
+
+The PHP-based applications are served through Nginx using `php-fpm` to interpret the PHP code.
 
 #### Web Environment Provisioning
 
@@ -109,7 +111,7 @@ Finally, the script performs the following configuration operations:
 * Changes the ownership information for Nginx logs, web data, document roots, etc. to the new web user with `chown`
 * Configures Redis to be managed and monitored under `systemd` so `systemctl` can be used
 
-The following TCP ports are bound (i.e. there is a something listening on them):
+The following TCP ports are bound (i.e. there is something listening on them):
 
 * HTTP: 80
 * HTTPS: 443
@@ -123,7 +125,7 @@ The _Database Environment_
 
 #### Database Environment Provisioning
 
-The following TCP ports are bound (i.e. there is a something listening on them):
+The following TCP ports are bound (i.e. there is something listening on them):
 
 * MariaDB (MySQL): 3306
 
