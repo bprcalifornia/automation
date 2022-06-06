@@ -40,10 +40,10 @@ The machines that BPR runs are hosted through VPS (Virtual Private Server) provi
 
 Some VPS providers:
 
-* [Linode](https://www.linode.com)
-* [Digital Ocean](https://www.digitalocean.com)
-* Amazon Web Services (AWS) - [EC2 Instances](https://aws.amazon.com/ec2)
-* Google Cloud Platform (GCP) - [Compute Engine](https://cloud.google.com/compute)
+* [Linode](https://www.linode.com) - [Dedicated](https://www.linode.com/products/dedicated-cpu) / [Shared](https://www.linode.com/products/shared)
+* [Digital Ocean](https://www.digitalocean.com) - [Droplets](https://www.digitalocean.com/products/droplets)
+* [Amazon Web Services (AWS)](https://aws.amazon.com) - [EC2 Instances](https://aws.amazon.com/ec2)
+* [Google Cloud Platform (GCP)](https://cloud.google.com) - [Compute Engine](https://cloud.google.com/compute)
 * [...and many more](https://www.google.com/search?q=vps+providers)
 
 ## Machine Provisioning
