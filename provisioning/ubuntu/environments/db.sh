@@ -49,6 +49,9 @@ install_mysql() {
     output_line "Make sure you run the following command to set up your new MySQL instance:"
     output_line "   sudo mysql_secure_installation"
     output_line
+    output_line "Make sure you disallow root login remotely to ensure that the root account"
+    output_line "can only be accessed from the same local machine"
+    output_line
 }
 
 # Install MySQL (MariaDB)
