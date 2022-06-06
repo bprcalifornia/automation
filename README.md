@@ -37,7 +37,7 @@ The environment-specific provisioning scripts live within the [`provisioning/ubu
 
 Script: [`common.sh`](provisioning/ubuntu/environments/common.sh)
 
-The _Common Environment_ is the base environment for all other environments. This script installs common packages and dependencies and configures SSH.
+The _Common Environment_ provides the base dependencies and configuration for all other environments.
 
 This is the first script that should be run before a specific environment is provisionined.
 
@@ -52,7 +52,7 @@ The provisioning script installs the following packages via `apt-get`:
 
 NOTE: the `build-essential` package is what includes `git`, `perl`, `make`, etc. as part of its [`dpkg-dev`](https://packages.ubuntu.com/jammy/dpkg-dev) dependency.
 
-The script also performs the following configuration operations:
+The script performs the following configuration operations:
 
 * Adds a non-root administrative user with `sudo` capabilities
 * Allows the new non-root user to access the machine via SSH
@@ -64,11 +64,52 @@ The script also performs the following configuration operations:
 
 Script: [`web.sh`](provisioning/ubuntu/environments/web.sh)
 
+The _Web Environment_ provides everything related to processing and serving data both internally (to our staff and clients) and externally (to the public) over the web.
+
+All of the BPR websites, web applications, and data that anyone accesses are served within this environment.
+
 #### Web Environment Provisioning
+
+The provisioning script installs the following packages via `snap`:
+
+* Core: [`core`](https://snapcraft.io/install/core/ubuntu)
+* Certbot: [`certbot`](https://snapcraft.io/install/certbot/ubuntu)
+
+NOTE: `certbot` is used to enable HTTPS in production through [Let's Encrypt](https://letsencrypt.org/getting-started/); `openssl` is used to enable HTTPS in the development environment(s).
+
+The provisioning script installs the following packages via `apt-get`:
+
+* [PHP 8.1](https://www.php.net/releases/8.1/en.php)
+    * [`php8.1`](https://packages.ubuntu.com/jammy/php8.1)
+    * [`php8.1-cli`](https://packages.ubuntu.com/jammy/php8.1-cli)
+    * [`php8.1-common`](https://packages.ubuntu.com/jammy/php8.1-common)
+    * [`php8.1-mysql`](https://packages.ubuntu.com/jammy/php8.1-mysql)
+    * [`php8.1-zip`](https://packages.ubuntu.com/jammy/php8.1-zip)
+    * [`php8.1-gd`](https://packages.ubuntu.com/jammy/php8.1-gd)
+    * [`php8.1-mbstring`](https://packages.ubuntu.com/jammy/php8.1-mbstring)
+    * [`php8.1-curl`](https://packages.ubuntu.com/jammy/php8.1-curl)
+    * [`php8.1-xml`](https://packages.ubuntu.com/jammy/php8.1-xml)
+    * [`php8.1-bcmath`](https://packages.ubuntu.com/jammy/php8.1-bcmath)
+    * [`php8.1-fpm`](https://packages.ubuntu.com/jammy/php8.1-fpm)
+* [Nginx](https://docs.nginx.com/nginx/admin-guide/web-server/): [`nginx`](https://packages.ubuntu.com/jammy/nginx)
+* [Redis](https://redis.io): [`redis-server`](https://packages.ubuntu.com/jammy/redis-server)
+
+The provisioning installs the following packages via `php`:
+
+* [Composer](https://getcomposer.org/): PHP package manager
+
+Finally, the script performs the following configuration operations:
+
+* Adds a non-admin web user and group named `www`
+* Changes the process user for Nginx to be the new web user
+* Changes the ownership information for Nginx logs, web data, document roots, etc. to the new web user with `chown`
+* Configures Redis to be managed and monitored under `systemd` so `systemctl` can be used
 
 ### Database Environment
 
 Script: [`db.sh`](provisioning/ubuntu/environments/db.sh)
+
+The _Database Environment_ 
 
 #### Database Environment Provisioning
 
