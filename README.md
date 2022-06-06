@@ -60,7 +60,7 @@ The script performs the following configuration operations:
 * Disables `root` login over SSH
 * Disables password-based login over SSH (for our purposes, we only want to use key-based auth)
 
-The following TCP ports are then bound (i.e. there is a something listening on them):
+The following TCP ports are bound (i.e. there is a something listening on them):
 
 * SSH: 22
 
@@ -109,11 +109,11 @@ Finally, the script performs the following configuration operations:
 * Changes the ownership information for Nginx logs, web data, document roots, etc. to the new web user with `chown`
 * Configures Redis to be managed and monitored under `systemd` so `systemctl` can be used
 
-The following TCP ports are then bound (i.e. there is a something listening on them):
+The following TCP ports are bound (i.e. there is a something listening on them):
 
 * HTTP: 80
 * HTTPS: 443
-* Redis: 6379 (localhost-bind only)
+* Redis: 6379 (`localhost`-only bind to prevent remote connections)
 
 ### Database Environment
 
@@ -123,7 +123,7 @@ The _Database Environment_
 
 #### Database Environment Provisioning
 
-The following TCP ports are then bound (i.e. there is a something listening on them):
+The following TCP ports are bound (i.e. there is a something listening on them):
 
 * MariaDB (MySQL): 3306
 
