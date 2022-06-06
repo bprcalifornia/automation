@@ -69,7 +69,7 @@ The script performs the following configuration operations:
 
 The following TCP ports are bound (i.e. there is something listening on them):
 
-* SSH: 22
+* SSH: `22`
 
 ### Web Environment
 
@@ -107,7 +107,7 @@ The provisioning script installs the following packages via `apt-get`:
 * [Nginx](https://docs.nginx.com/nginx/admin-guide/web-server/): [`nginx`](https://packages.ubuntu.com/jammy/nginx)
 * [Redis](https://redis.io): [`redis-server`](https://packages.ubuntu.com/jammy/redis-server)
 
-The provisioning installs the following packages via `php`:
+The provisioning script installs the following packages via `php`:
 
 * [Composer](https://getcomposer.org/): PHP package manager
 
@@ -120,21 +120,67 @@ Finally, the script performs the following configuration operations:
 
 The following TCP ports are bound (i.e. there is something listening on them):
 
-* HTTP: 80
-* HTTPS: 443
-* Redis: 6379 (`localhost`-only bind to prevent remote connections)
+* HTTP: `80`
+* HTTPS: `443`
+* Redis: `6379` (`localhost`-only bind to prevent remote connections)
 
 ### Database Environment
 
 Script: [`db.sh`](provisioning/ubuntu/environments/db.sh)
 
-The _Database Environment_ 
+The _Database Environment_ provides everything related to the structure, storage, retrieval, and manipulation of data within the BPR databases.
+
+BPR uses [MariaDB](https://mariadb.org/) instead of [MySQL](https://www.mysql.com/) (as a drop-in replacement) for its relational (RDBMS) data.
 
 #### Database Environment Provisioning
 
+The provisioning script installs the following packages via `apt-get`:
+
+* MariaDB: [`mariadb-server`](https://packages.ubuntu.com/jammy/mariadb-server)
+
+The script also informs the user that they need to perform a secure MySQL installation manually with `sudo mysql_secure_installation`.
+
+We perform the following configuration actions when prompted during the secure installation:
+
+* Allow standard logins for `root` (i.e. **DO NOT** switch to `unix_socket` authentication)
+* Set an actual password for `root`
+    * This ensures that merely having access to the underlying OS `root` account does not also grant passwordless access to the MariaDB `root` account
+* Remove anonymous users
+* Remove the `test` database
+* Disable remote logins for `root` so it is `localhost`-only via its `GRANT` clause
+* Reload the privilege tables
+
+Similarly to what we do during the [common environment provisioning](#common-environment) regarding adding an OS non-root admin user, we will add a non-root DB admin:
+
+1. Authenticate into MariaDB (entering your new `root` DB password when prompted): `mysql -u root -p`
+2. Execute the following statements to create a `localhost`-only [administrative account that can control everything](https://www.digitalocean.com/community/tutorials/how-to-create-a-new-user-and-grant-permissions-in-mysql) (and also create additional accounts and grant privileges):
+
+```
+# replace [ADMIN_USERNAME] with the user account name to create and replace
+# [ADMIN_PASSWORD] with the password to assign to the new account
+
+CREATE USER '[ADMIN_USERNAME]'@localhost IDENTIFIED BY '[ADMIN_PASSWORD]';
+GRANT ALL PRIVILEGES ON *.* TO '[ADMIN_USERNAME]'@localhost WITH GRANT OPTION;
+```
+
+For example, to create a new `db_admin` user with the password `adminpw` we would execute the following statements:
+
+```
+CREATE USER 'db_admin'@localhost IDENTIFIED BY 'adminpw';
+GRANT ALL PRIVILEGES ON *.* TO 'db_admin'@localhost WITH GRANT OPTION;
+```
+
+3. Execute the following statement to flush the privilege tables and activate the new account:
+
+```
+FLUSH PRIVILEGES;
+```
+
+4. Disconnect from the MariaDB server via the mysql CLI: `exit;`
+
 The following TCP ports are bound (i.e. there is something listening on them):
 
-* MariaDB (MySQL): 3306
+* MariaDB (MySQL): `3306`
 
 ## Nginx Automation
 
