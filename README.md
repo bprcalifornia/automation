@@ -72,7 +72,7 @@ The _Web Environment_ provides everything related to processing and serving data
 
 All of the BPR websites, web applications, and data that anyone accesses are served within this environment.
 
-The PHP-based applications are served through Nginx using `php-fpm` to interpret the PHP code.
+The PHP-based applications are served through Nginx using [`php-fpm`](https://www.nginx.com/resources/wiki/start/topics/examples/phpfcgi/) with a Unix socket to process the PHP code.
 
 #### Web Environment Provisioning
 
