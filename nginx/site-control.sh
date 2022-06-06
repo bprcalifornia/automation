@@ -35,7 +35,7 @@ display_help() {
     echo
     echo "Operation can be one of the following:"
     echo
-    echo "   add-site [server_name]"
+    echo "   add-site [server_name] [--regular|--laravel]"
     echo "   check-site [server_name]"
     echo "   disable-site [server_name]"
     echo "   enable-site [server_name]"
@@ -47,12 +47,16 @@ display_help() {
     echo "Examples:"
     echo
     echo "   add-site example.com"
+    echo "   add-site example.com --regular"
+    echo "   add-site example.com --laravel"
     echo "   check-site example.com"
     echo "   disable-site example.com"
     echo "   enable-site example.com"
+    echo "   add-ssl-cert example.com"
     echo "   add-ssl-cert example.com --local"
     echo "   add-ssl-cert example.com --production"
     echo "   remove-ssl-cert example.com"
+    echo "   replace-ssl-cert example.com"
     echo "   replace-ssl-cert example.com --local"
     echo "   replace-ssl-cert example.com --production"
 }
@@ -319,7 +323,17 @@ fi
 case "$1" in
     add-site)
         # add a new Nginx site
-        add_site "$2"
+        local site_type=""
+        if [ ! -z "$3" ]; then
+            case "$3" in
+                --laravel)
+                    site_type="laravel"
+                    ;;
+                *)
+                    site_type="regular"
+            esac
+        fi
+        add_site "$2" "${site_type}"
         ;;
     check-site)
         # checks the configuration of an Nginx site
