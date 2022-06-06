@@ -17,10 +17,13 @@ Automated scripts and tools related to [Burbank Paranormal Research](https://git
 * [Environments](#environments)
     * [Common Environment](#common-environment)
         * [Common Environment Provisioning](#common-environment-provisioning)
+        * [Common Port Binds](#common-port-binds)
     * [Web Environment](#web-environment)
         * [Web Environment Provisioning](#web-environment-provisioning)
+        * [Web Port Binds](#web-port-binds)
     * [Database Environment](#database-environment)
         * [Database Environment Provisioning](#database-environment-provisioning)
+        * [Database Port Binds](#database-port-binds)
 * [Nginx Automation](#nginx-automation)
     * [Site Control Tool](#site-control-tool)
 
@@ -66,6 +69,8 @@ The script performs the following configuration operations:
 * Removes the password from and locks the `root` account
 * Disables `root` login over SSH
 * Disables password-based login over SSH (for our purposes, we only want to use key-based auth)
+
+#### Common Port Binds
 
 The following TCP ports are bound (i.e. there is something listening on them):
 
@@ -117,6 +122,8 @@ Finally, the script performs the following configuration operations:
 * Changes the process user for Nginx to be the new web user
 * Changes the ownership information for Nginx logs, web data, document roots, etc. to the new web user with `chown`
 * Configures Redis to be managed and monitored under `systemd` so `systemctl` can be used
+
+#### Web Port Binds
 
 The following TCP ports are bound (i.e. there is something listening on them):
 
@@ -176,7 +183,9 @@ GRANT ALL PRIVILEGES ON *.* TO 'db_admin'@localhost WITH GRANT OPTION;
 FLUSH PRIVILEGES;
 ```
 
-4. Disconnect from the MariaDB server via the mysql CLI: `exit;`
+4. Disconnect from the MariaDB instance via the `mysql` CLI: `exit;`
+
+#### Database Port Binds
 
 The following TCP ports are bound (i.e. there is something listening on them):
 
