@@ -8,8 +8,11 @@ Automated scripts and tools related to [Burbank Paranormal Research](https://git
 * [Machine Provisioning](#machine-provisioning)
     * [Environments](#environments)
         * [Common Environment](#common-environment)
+            * [Common Environment Provisioning](#common-environment-provisioning)
         * [Web Environment](#web-environment)
+            * [Web Environment Provisioning](#web-environment-provisioning)
         * [Database Environment](#database-environment)
+            * [Database Environment Provisioning](#database-environment-provisioning)
 * [Nginx Automation](#nginx-automation)
     * [Site Control Tool](#site-control-tool)
 
@@ -31,13 +34,40 @@ The environment-specific provisioning scripts live within the [`provisioning/ubu
 
 Script: [`common.sh`](provisioning/ubuntu/environments/common.sh)
 
+The _Common Environment_ is the base environment for all other environments. This script installs common packages and dependencies and configures SSH.
+
+This is the first script that should be run before a specific environment is provisionined.
+
+##### Common Environment Provisioning
+
+The provisioning script installs the following packages via `apt-get`:
+
+* Development / Building: `build-essential`
+* OpenSSH: `openssh-client`, `openssh-server`
+* Network Tools: `net-tools`, `wget`
+* OpenSSL: `libssl-dev`
+
+NOTE: the `build-essential` package is what includes `git`, `svn`, `make`, etc.
+
+The script also performs the following configuration operations:
+
+* Adds a non-root administrative user with `sudo` capabilities
+* Allows the new non-root user to access the machine via SSH
+* Removes the password from and locks the `root` account
+* Disables `root` login over SSH
+* Disables password-based login over SSH (for our purposes, we only want to use key-based auth)
+
 #### Web Environment
 
 Script: [`web.sh`](provisioning/ubuntu/environments/web.sh)
 
+##### Web Environment Provisioning
+
 #### Database Environment
 
 Script: [`db.sh`](provisioning/ubuntu/environments/db.sh)
+
+##### Database Environment Provisioning
 
 ## Nginx Automation
 
