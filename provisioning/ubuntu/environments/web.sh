@@ -128,6 +128,32 @@ install_nginx() {
     sudo systemctl restart nginx
 }
 
+# Installs Node using NVM and then installs its Yarn package manager globally
+#
+# Ex: install_node
+install_node() {
+    # install the most-recent stable Node version with NVM
+    nvm install node
+
+    # now install the Yarn package manager globally with npm
+    npm install -g yarn
+}
+
+# Installs NVM
+#
+# Ex: install_nvm
+install_nvm() {
+    # install NVM using the install script
+    # https://github.com/nvm-sh/nvm
+    wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
+
+    # allow NVM to be used immediately
+    # these lines are printed to STDOUT after the install script finishes running
+    export NVM_DIR="$HOME/.nvm"
+    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+    [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+}
+
 # Installs PHP along with some useful extensions
 #
 # Ex: install_php
@@ -185,3 +211,13 @@ output_line "Finished installing Nginx"
 output_line "Installing Redis..."
 install_redis
 output_line "Finished installing Redis"
+
+# Install NVM
+output_line "Installing Node Version Manager..."
+install_nvm
+output_line "Finished installing Node Version Manager"
+
+# Install Node and Yarn
+output_line "Installing most-recent stable NodeJS version and its yarn package manager..."
+install_node
+output_line "Finished installing NodeJS and yarn"

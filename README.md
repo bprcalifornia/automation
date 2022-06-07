@@ -129,6 +129,18 @@ The provisioning script installs the following packages via `php`:
 
 * [Composer](https://getcomposer.org/): PHP package manager
 
+The provisioning script installs the following tools via `bash`:
+
+* [Node Version Manager](https://github.com/nvm-sh/nvm) (NVM): version manager for [NodeJS](https://nodejs.org/en/)
+
+The provisioning script installs the following tools via `nvm`:
+
+* [Most-current stable release](https://nodejs.org/en/download/current/) of NodeJS
+
+The provisioning script installs the following packages via `npm`:
+
+* [Yarn](https://yarnpkg.com/): NodeJS package manager replacement for NPM
+
 Finally, the script performs the following configuration operations:
 
 * Adds a non-admin web user and group named `www`
