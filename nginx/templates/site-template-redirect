@@ -14,7 +14,7 @@ server {
 
 server {
     # redirect to the new host via HTTPS
-    listen 443;
+    listen 443 ssl;
     server_name [SERVER_NAME];
 
     # HTTPS certificate configuration

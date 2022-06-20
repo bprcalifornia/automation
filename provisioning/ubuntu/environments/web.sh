@@ -167,6 +167,12 @@ install_php() {
         install_command="${install_command} ${PHP_VERSION_NAME}-${package_name}"
     done
     sudo $install_command
+
+    # ensure our PHP-FPM process pool will run as our web user and not the www-data account
+    # since we don't want to run into 502 Bad Gateway responses from Nginx by default
+    # https://serverfault.com/q/1059918
+    sudo perl -p -i -e "s/www-data/${WEB_ACCOUNT_USER}/g" /etc/php/8.1/fpm/pool.d/www.conf
+    sudo systemctl restart php8.1-fpm
 }
 
 # Installs Redis

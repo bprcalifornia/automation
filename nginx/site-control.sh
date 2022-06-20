@@ -218,6 +218,7 @@ add_site_redirect() {
 # Ex: add_ssl_certificate "example.com" "production"
 #
 # https://www.digitalocean.com/community/tutorials/openssl-essentials-working-with-ssl-certificates-private-keys-and-csrs#generate-a-self-signed-certificate
+# https://www.digitalocean.com/community/tutorials/how-to-create-a-self-signed-ssl-certificate-for-nginx-in-ubuntu-22-04
 add_ssl_certificate() {
     # set variables for readability
     local server_name="$1"
