@@ -4,6 +4,7 @@
     "version": "2.0.0",
     "tasks": [
         {
+            // https://www.roboleary.net/vscode/2020/10/19/vscode-task-onstartup.html
             "label": "Deploy to Server",
             "type": "shell",
             "command": "make deploy",
