@@ -139,16 +139,20 @@ add_site() {
         return
     fi
     sudo cp $SCRIPT_DIR/$template_file $site_filename
-    sudo perl -p -i -e "s/[SERVER_NAME]/${server_name}/g" $site_filename
+    sudo perl -p -i -e "s/(\[SERVER_NAME\])/${server_name}/g" $site_filename
 
     # add a site-specific log directory with the proper ownership
     local site_log_dir="${NGINX_LOG_DIR}/${server_name}"
-    sudo mkdir $site_log_dir
-    sudo chown $WEB_ACCOUNT_USER $site_log_dir
+    if [ ! -d "$site_log_dir" ]; then
+        sudo mkdir $site_log_dir
+        sudo chown $WEB_ACCOUNT_USER $site_log_dir
+    fi
 
     # now create the site root then set its permissions and ownership
     local site_root="${WEB_ACCOUNT_DIR}/${server_name}"
-    sudo mkdir -p $site_root
+    if [ ! -d "$site_root" ]; then
+        sudo mkdir -p $site_root
+    fi
     sudo chmod 755 $site_root
     sudo chown $WEB_ACCOUNT_USER:$WEB_ACCOUNT_GROUP $site_root
 
@@ -184,6 +188,14 @@ add_ssl_certificate() {
     fi
 
     output_line "Adding SSL certificate for site \"${server_name}\"..."
+
+    # prevent clobbering in case the cert files already exists
+    local key_stat=$(sudo stat $key_file) # we just care about the status code for $? and don't want to show the output
+    if [[ -f "$cert_file" && "$?" -eq "0" ]]; then
+        # certificate files already exist
+        error_line "Certificate files (cert and private key) already exist. Skipping."
+        return
+    fi
 
     # generate the certificate
     case "$cert_type" in
@@ -323,7 +335,7 @@ fi
 case "$1" in
     add-site)
         # add a new Nginx site
-        local site_type=""
+        site_type=""
         if [ ! -z "$3" ]; then
             case "$3" in
                 --laravel)
@@ -349,7 +361,7 @@ case "$1" in
         ;;
     add-ssl-cert)
         # add an SSL cert for a site
-        local cert_type=""
+        cert_type=""
         if [ ! -z "$3" ]; then
             case "$3" in
                 --production)
@@ -367,7 +379,7 @@ case "$1" in
         ;;
     replace-ssl-cert)
         # replace an SSL cert for a site
-        local cert_type=""
+        cert_type=""
         if [ ! -z "$3" ]; then
             case "$3" in
                 --production)
