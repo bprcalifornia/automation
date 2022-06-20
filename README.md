@@ -146,6 +146,7 @@ Finally, the script performs the following configuration operations:
 * Adds a non-admin web user and group named `www`
 * Changes the process user for Nginx to be the new web user
 * Changes the ownership information for Nginx logs, web data, document roots, etc. to the new web user with `chown`
+* Changes the user for the `php-fpm` process pool to be the new web user
 * Configures Redis to be managed and monitored under `systemd` so `systemctl` can be used
 
 #### Web Port Binds
