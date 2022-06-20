@@ -145,8 +145,8 @@ add_site() {
     local site_log_dir="${NGINX_LOG_DIR}/${server_name}"
     if [ ! -d "$site_log_dir" ]; then
         sudo mkdir $site_log_dir
-        sudo chown $WEB_ACCOUNT_USER $site_log_dir
     fi
+    sudo chown $WEB_ACCOUNT_USER $site_log_dir
 
     # now create the site root then set its permissions and ownership
     local site_root="${WEB_ACCOUNT_DIR}/${server_name}"
@@ -241,6 +241,10 @@ check_site() {
     else
         output_line "Site configuration is not enabled (symlink does not exist)"
     fi
+
+    # now run the check the overall Nginx configuration
+    output_line "Checking overall Nginx configuration..."
+    sudo nginx -t
 }
 
 # Disables a site in Nginx
