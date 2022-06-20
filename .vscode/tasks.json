@@ -11,8 +11,7 @@
                 "command": "make deploy"
             },
             "presentation": {
-                "panel": "shared",
-                "clear": true
+                "panel": "dedicated"
             },
             "problemMatcher": [],
             "group": {
