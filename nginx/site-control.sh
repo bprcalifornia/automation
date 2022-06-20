@@ -121,12 +121,12 @@ add_site() {
     case "$template_type" in
         laravel)
             # use the Laravel site template
-            output_line "Using default site template"
+            output_line "Using Laravel site template"
             template_file="templates/site-template-laravel"
             ;;
         *)
             # default to the regular template
-            output_line "Using Laravel site template"
+            output_line "Using default site template"
             template_file="templates/site-template"
     esac
 
