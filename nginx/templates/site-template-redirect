@@ -1,0 +1,29 @@
+# Nginx template for sites that only perform redirects to other hosts
+
+server {
+    # redirect to the new host via HTTP
+    listen 80;
+    server_name [SERVER_NAME];
+
+    # site-specific logging configuration
+    access_log /var/log/nginx/[SERVER_NAME]/access.log;
+    error_log /var/log/nginx/[SERVER_NAME]/error.log;
+
+    return 301 http://[REDIRECT_HOST]$request_uri;
+}
+
+server {
+    # redirect to the new host via HTTPS
+    listen 443;
+    server_name [SERVER_NAME];
+
+    # HTTPS certificate configuration
+    ssl_certificate /etc/ssl/certs/[SERVER_NAME].crt;
+    ssl_certificate_key /etc/ssl/private/[SERVER_NAME].key;
+
+    # site-specific logging configuration
+    access_log /var/log/nginx/[SERVER_NAME]/access.log;
+    error_log /var/log/nginx/[SERVER_NAME]/error.log;
+
+    return 301 https://[REDIRECT_HOST]$request_uri;
+}

@@ -36,6 +36,7 @@ display_help() {
     echo "Operation can be one of the following:"
     echo
     echo "   add-site [server_name] [--regular|--laravel]"
+    echo "   add-site-redirect [server_name] [redirect_host]"
     echo "   check-site [server_name]"
     echo "   disable-site [server_name]"
     echo "   enable-site [server_name]"
@@ -49,6 +50,7 @@ display_help() {
     echo "   add-site example.com"
     echo "   add-site example.com --regular"
     echo "   add-site example.com --laravel"
+    echo "   add-site-redirect example.com www.example.com"
     echo "   check-site example.com"
     echo "   disable-site example.com"
     echo "   enable-site example.com"
@@ -163,6 +165,51 @@ add_site() {
     output_line "Added site \"${server_name}\" to Nginx successfully"
 }
 
+# Adds a new site redirect to Nginx.
+#
+# Ex: add_site_redirect "example.com" "www.example.com"
+add_site_redirect() {
+    # set variables for readability
+    local server_name="$1"
+    local redirect_host="$2"
+    local template_file="templates/site-template-redirect"
+    if [ -z "$server_name" ]; then
+        error_line "Site name is required. Skipping"
+        return
+    fi
+    if [ -z "$redirect_host" ]; then
+        error_line "Redirect host name is required. Skipping"
+        return
+    fi
+
+    output_line "Adding site redirect for \"${server_name}\" -> \"${redirect_host}\" to Nginx..."
+
+    # copy over the template file and update all server and host references; intentionally
+    # prevent clobbering in case the site configuration already exists
+    local site_filename="${SITES_AVAILABLE_DIR}/${server_name}"
+    if [ -f "$site_filename" ]; then
+        # site configuration file already exists
+        error_line "Site configuration file \"${server_name}\" already exists. Skipping."
+        return
+    fi
+    sudo cp $SCRIPT_DIR/$template_file $site_filename
+    sudo perl -p -i -e "s/(\[SERVER_NAME\])/${server_name}/g" $site_filename
+    sudo perl -p -i -e "s/(\[REDIRECT_HOST\])/${redirect_host}/g" $site_filename
+
+    # add a site-specific log directory with the proper ownership
+    local site_log_dir="${NGINX_LOG_DIR}/${server_name}"
+    if [ ! -d "$site_log_dir" ]; then
+        sudo mkdir $site_log_dir
+    fi
+    sudo chown $WEB_ACCOUNT_USER $site_log_dir
+
+    # add a default SSL certificate for the site so we can have HTTPS during
+    # development
+    add_ssl_certificate $server_name
+
+    output_line "Added site redirect \"${server_name}\" -> \"${redirect_host}\" to Nginx successfully"
+}
+
 # Installs an SSL certificate for Nginx. If the second parameter is "production",
 # then certbot and Let's Encrypt will be used for generating the cert; otherwise,
 # openssl will be used to generate a self-signed cert.
@@ -190,7 +237,7 @@ add_ssl_certificate() {
     output_line "Adding SSL certificate for site \"${server_name}\"..."
 
     # prevent clobbering in case the cert files already exists
-    local key_stat=$(sudo stat $key_file) # we just care about the status code for $? and don't want to show the output
+    sudo stat $key_file > /dev/null 2>&1 # we just care about the status code for $? and don't want to show STDOUT/STDERR
     if [[ -f "$cert_file" && "$?" -eq "0" ]]; then
         # certificate files already exist
         error_line "Certificate files (cert and private key) already exist. Skipping."
@@ -350,6 +397,10 @@ case "$1" in
             esac
         fi
         add_site "$2" "${site_type}"
+        ;;
+    add-site-redirect)
+        # add a new Nginx redirect site
+        add_site_redirect "$2" "$3"
         ;;
     check-site)
         # checks the configuration of an Nginx site
