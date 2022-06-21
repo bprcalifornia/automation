@@ -158,10 +158,6 @@ add_site() {
     sudo chmod 755 $site_root
     sudo chown $WEB_ACCOUNT_USER:$WEB_ACCOUNT_GROUP $site_root
 
-    # add a default SSL certificate for the site so we can have HTTPS during
-    # development
-    add_ssl_certificate $server_name
-
     output_line "Added site \"${server_name}\" to Nginx successfully"
 }
 
@@ -203,10 +199,6 @@ add_site_redirect() {
     fi
     sudo chown $WEB_ACCOUNT_USER $site_log_dir
 
-    # add a default SSL certificate for the site so we can have HTTPS during
-    # development
-    add_ssl_certificate $server_name
-
     output_line "Added site redirect \"${server_name}\" -> \"${redirect_host}\" to Nginx successfully"
 }
 
@@ -219,6 +211,8 @@ add_site_redirect() {
 #
 # https://www.digitalocean.com/community/tutorials/openssl-essentials-working-with-ssl-certificates-private-keys-and-csrs#generate-a-self-signed-certificate
 # https://www.digitalocean.com/community/tutorials/how-to-create-a-self-signed-ssl-certificate-for-nginx-in-ubuntu-22-04
+# https://gist.github.com/iwazaru/579b547cc04f205b929d32e4f243d4f9
+# https://www.digitalocean.com/community/tutorials/how-to-secure-nginx-with-let-s-encrypt-on-ubuntu-22-04
 add_ssl_certificate() {
     # set variables for readability
     local server_name="$1"
@@ -237,20 +231,32 @@ add_ssl_certificate() {
 
     output_line "Adding SSL certificate for site \"${server_name}\"..."
 
-    # prevent clobbering in case the cert files already exists
-    sudo stat $key_file > /dev/null 2>&1 # we just care about the status code for $? and don't want to show STDOUT/STDERR
-    if [[ -f "$cert_file" && "$?" -eq "0" ]]; then
-        # certificate files already exist
-        error_line "Certificate files (cert and private key) already exist. Skipping."
-        return
-    fi
-
     # generate the certificate
     case "$cert_type" in
         production)
-            # TODO: use certbot to generate and install the certificate
+            # make sure certbot is installed first
+            CERTBOT=$(which certbot)
+            output_line "Using Certbot (Let's Encrypt) to generate a certificate"
+            if [ -z "$CERTBOT" ]; then
+                error_line "Certbot is not installed. Please install certbot by visiting:"
+                error_line "   https://letsencrypt.org/getting-started/"
+                error_line "   https://certbot.eff.org/instructions?ws=nginx&os=ubuntufocal"
+                error_line "Skipping"
+                return
+            fi
+
+            # use certbot to generate and install the certificate and then manage it
+            sudo $CERTBOT --nginx -d ${server_name}
             ;;
         *)
+            # prevent clobbering in case the cert files already exists
+            sudo stat $key_file > /dev/null 2>&1 # we just care about the status code for $? and don't want to show STDOUT/STDERR
+            if [[ -f "$cert_file" && "$?" -eq "0" ]]; then
+                # certificate files already exist
+                error_line "Certificate files (cert and private key) already exist. Skipping."
+                return
+            fi
+
             # use openssl to generate a new X.509 self-signed certificate
             output_line "Using openssl to generate a self-signed certificate"
             sudo openssl req -newkey rsa:2048 -nodes -keyout $key_file -x509 -days 365 -out $cert_file
