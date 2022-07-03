@@ -72,6 +72,7 @@ The provisioning script installs the following packages via `apt-get`:
 * OpenSSH: [`openssh-client`](https://packages.ubuntu.com/jammy/openssh-client), [`openssh-server`](https://packages.ubuntu.com/jammy/openssh-server)
 * Network Tools: [`net-tools`](https://packages.ubuntu.com/jammy/net-tools), [`wget`](https://packages.ubuntu.com/jammy/wget)
 * OpenSSL: [`libssl-dev`](https://packages.ubuntu.com/jammy/libssl-dev)
+* Archiving: [`zip`](https://packages.ubuntu.com/jammy/zip)
 
 NOTE: the `build-essential` package is what includes `git`, `perl`, `make`, etc. as part of its [`dpkg-dev`](https://packages.ubuntu.com/jammy/dpkg-dev) dependency.
 
