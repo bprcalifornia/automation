@@ -121,6 +121,7 @@ The provisioning script installs the following packages via `apt-get`:
     * [`php8.1-curl`](https://packages.ubuntu.com/jammy/php8.1-curl)
     * [`php8.1-xml`](https://packages.ubuntu.com/jammy/php8.1-xml)
     * [`php8.1-bcmath`](https://packages.ubuntu.com/jammy/php8.1-bcmath)
+    * [`php8.1-redis`](https://packages.ubuntu.com/jammy/php8.1-redis)
     * [`php8.1-fpm`](https://packages.ubuntu.com/jammy/php8.1-fpm)
 * [Nginx](https://docs.nginx.com/nginx/admin-guide/web-server/): [`nginx`](https://packages.ubuntu.com/jammy/nginx)
 * [Redis](https://redis.io): [`redis-server`](https://packages.ubuntu.com/jammy/redis-server)

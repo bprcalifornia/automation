@@ -22,7 +22,7 @@ WEB_ACCOUNT_DIR="/var/www"
 
 # Name of the PHP version when installing packages and the relative package names
 PHP_VERSION_NAME="php8.1"
-PHP_VERSION_PACKAGES="cli common mysql zip gd mbstring curl xml bcmath fpm"
+PHP_VERSION_PACKAGES="cli common mysql zip gd mbstring curl xml bcmath redis fpm"
 
 # Nginx-specific properties
 NGINX_LOG_DIR="/var/log/nginx"
