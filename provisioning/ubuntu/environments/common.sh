@@ -175,8 +175,9 @@ output_line "Finished installing OpenSSH tools"
 # wget: simple file retrieval tool
 # libssl-dev: OpenSSL development libraries
 # net-tools: networking tools for debugging/analysis
+# zip: compression and decompression support for ZIP files
 output_line "Installing miscellaneous packages..."
-sudo apt-get -y install wget libssl-dev net-tools
+sudo apt-get -y install wget libssl-dev net-tools zip
 output_line "Finished installing miscellaneous packages"
 
 # Add a new non-root admin account
